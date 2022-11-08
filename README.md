@@ -15,6 +15,8 @@
 - [Setting](#setting)
 - [Nomor 1](#nomor-1)
 - [Nomor 2](#nomor-2)
+- [Nomor 2 Lanjutan](#nomor-2-lanjutan)
+- [Nomor 3](#nomor-3)
 
 ---
 ### Setting
@@ -150,9 +152,51 @@ apt-get update
 apt-get install squid -y
 service squid start
 ```
-lalu cek dengan `service squid status`
+lalu cek dengan `service squid status` </br>
+<img src="https://user-images.githubusercontent.com/70510279/200559998-aef4a55e-7532-423f-937e-265fda7114d3.png" alt="Squid Status" width="200"/>
 
 </br>
 
 ### Nomor 2 
+dan Ostania sebagai DHCP Relay (2). Loid dan Franky menyusun peta tersebut dengan hati-hati dan teliti.
+#### Ostania 
+```
+apt-get update
+apt-get install isc-dhcp-relay -y
+```
+lalu edit file ` /etc/default/isc-dhcp-relay` dengan
+```
+SERVER = "192.191.2.4" #IP Westalis
+INTERFACES = "eth1 eth2 eth3"
+OPTIONS = ""
+```
 
+### Nomor 2 Lanjutan
+Semua client yang ada HARUS menggunakan konfigurasi IP dari DHCP Server
+
+#### Konfigurasi
+Ubah semua koneksi `statis` menjadi `dhcp` pada semua node client. </br>
+<img src="https://user-images.githubusercontent.com/70510279/200560417-f1d89a90-90cd-4829-923e-abc8036aed25.png" alt="Ubah DHCP" width="200"/>
+</br>
+yang perlu diubah yaitu 
+- SSS
+- Garden
+- Eden
+- NewstonCastle
+- KemonoPark
+
+</br>
+Syntax Konfigurasi untuk nomor selanjutnya 
+
+```
+subnet 'NID' netmask 'Netmask' {
+    range 'IP_Awal' 'IP_Akhir';
+    option routers 'iP_Gateway';
+    option broadcast-address 'IP_Broadcast';
+    option domain-name-servers 'DNS_yang_diinginkan';
+    default-lease-time 'Waktu';
+    max-lease-time 'Waktu';
+}
+```
+
+### Nomor 3
