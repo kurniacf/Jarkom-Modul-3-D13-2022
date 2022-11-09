@@ -200,3 +200,33 @@ subnet 'NID' netmask 'Netmask' {
 ```
 
 ### Nomor 3
+Client yang melalui Switch1 mendapatkan range IP dari [prefix IP].1.50 - [prefix IP].1.88 dan [prefix IP].1.120 - [prefix IP].1.155 (3)
+
+#### Ubah di Westalis
+edit file `/etc/dhcp/dhcpd.conf` sebagai berikut
+```
+subnet 192.191.1.0 netmask 255.255.255.0 {
+    range 192.191.1.20 192.191.1.99;
+    range 192.191.1.150 192.191.1.169;
+    option routers 192.191.1.1;
+    option broadcast-address 192.191.1.255;
+}
+```
+Setelah itu jalankan dengan melakukan `service isc-dhcp-server restart`
+
+### Nomor 4
+Client yang melalui Switch3 mendapatkan range IP dari [prefix IP].3.10 - [prefix IP].3.30 dan [prefix IP].3.60 - [prefix IP].3.85 (4)
+
+#### Westalis
+edit file `/etc/dhcp/dhcpd.conf` sebagai berikut
+```
+subnet 192.191.3.0 netmask 255.255.255.0 {
+    range 192.191.3.30 192.191.3.50;
+    option routers 192.191.3.1;
+    option broadcast-address 192.191.3.255;
+	default-lease-time 720;
+    max-lease-time 7200;
+}
+```
+
+#### Nomor 5
