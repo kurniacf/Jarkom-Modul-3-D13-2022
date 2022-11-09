@@ -46,19 +46,13 @@ iface eth3 inet static
 #### SSS
 ```
 auto eth0
-iface eth0 inet static
-	address 192.191.1.2
-	netmask 255.255.255.0
-	gateway 192.191.1.1
+iface eth0 inet dhcp
 ```
 
 #### Garden
 ```
 auto eth0
-iface eth0 inet static
-	address 192.191.1.3
-	netmask 255.255.255.0
-	gateway 192.191.1.1
+iface eth0 inet dhcp
 ```
 
 #### WISE
@@ -91,28 +85,20 @@ iface eth0 inet static
 #### Eden
 ```
 auto eth0
-iface eth0 inet static
-	address 192.191.3.2
-	netmask 255.255.255.0
-	gateway 192.191.3.1
+iface eth0 inet dhcp
+hwaddress ether 32:20:59:5c:25:3b
 ```
 
 #### NewstonCastle
 ```
 auto eth0
-iface eth0 inet static
-	address 192.191.3.3
-	netmask 255.255.255.0
-	gateway 192.191.3.1
+iface eth0 inet dhcp
 ```
 
 #### KemonoPark
 ```
 auto eth0
-iface eth0 inet static
-	address 192.191.3.4
-	netmask 255.255.255.0
-	gateway 192.191.3.1
+iface eth0 inet dhcp
 ```
 
 masukkan ke `/root/.bashrc` ke setiap node
@@ -205,14 +191,22 @@ Client yang melalui Switch1 mendapatkan range IP dari [prefix IP].1.50 - [prefix
 #### Ubah di Westalis
 edit file `/etc/dhcp/dhcpd.conf` sebagai berikut
 ```
-subnet 192.191.1.0 netmask 255.255.255.0 {
-    range 192.191.1.20 192.191.1.99;
-    range 192.191.1.150 192.191.1.169;
-    option routers 192.191.1.1;
-    option broadcast-address 192.191.1.255;
+subnet 192.191.2.0 netmask 255.255.255.0{
+    option routers 192.191.2.1;
 }
 ```
-Setelah itu jalankan dengan melakukan `service isc-dhcp-server restart`
+lalu tambahkan setingan ip range dan ip dns
+```
+subnet 192.191.1.0 netmask 255.255.255.0 {
+        range 192.191.1.50 192.191.1.88;
+        range 192.191.1.120 192.191.1.155;
+        option routers 192.191.1.1;
+        option broadcast-address 192.191.1.255;
+        option domain-name-servers 192.191.2.2;
+        default-lease-time 300;
+        max-lease-time 6900;
+}
+```
 
 ### Nomor 4
 Client yang melalui Switch3 mendapatkan range IP dari [prefix IP].3.10 - [prefix IP].3.30 dan [prefix IP].3.60 - [prefix IP].3.85 (4)
@@ -221,12 +215,76 @@ Client yang melalui Switch3 mendapatkan range IP dari [prefix IP].3.10 - [prefix
 edit file `/etc/dhcp/dhcpd.conf` sebagai berikut
 ```
 subnet 192.191.3.0 netmask 255.255.255.0 {
-    range 192.191.3.30 192.191.3.50;
-    option routers 192.191.3.1;
-    option broadcast-address 192.191.3.255;
-	default-lease-time 720;
-    max-lease-time 7200;
+        range 192.191.3.10 192.191.3.30;
+        range 192.191.3.60 192.191.3.85;
+        option routers 192.191.3.1;
+        option broadcast-address 192.191.3.255;
+        option domain-name-servers 192.191.2.2;
+        default-lease-time 600;
+        max-lease-time 6900;
 }
 ```
 
-#### Nomor 5
+### Nomor 5
+Client mendapatkan DNS dari WISE dan client dapat terhubung dengan internet melalui DNS tersebut
+jalankan dhcp server dengan `service isc-dhcp-server restart`
+##### Test Client di Kemono Park
+![image](https://user-images.githubusercontent.com/74979139/200856353-7ab93e83-0bdd-44f5-905b-6d3dea63eb35.png)
+
+### Nomor 6
+Lama waktu DHCP server meminjamkan alamat IP kepada Client yang melalui Switch1 selama 5 menit sedangkan pada client yang melalui Switch3 selama 10 menit. Dengan waktu maksimal yang dialokasikan untuk peminjaman alamat IP selama 115 menit.
+
+settingan waktu sudah ditambahkan di no 3 dan 4 yang ada di `/etc/dhcp/dhcpd.conf`
+```
+default-lease-time 300;
+max-lease-time 6900;
+```
+
+### Nomor 7
+Loid dan Franky berencana menjadikan Eden sebagai server untuk pertukaran informasi dengan alamat IP yang tetap dengan IP [prefix IP].3.13
+
+Tambahkan config berikut di `/etc/dhcp/dhcpd.conf`
+```
+host Eden {
+        hardware ethernet 32:20:59:5c:25:3b;
+        fixed-address 192.191.3.13;
+}
+```
+lalu setting network config Eden seperti yang sudah dilakukan diatas
+```
+auto eth0
+iface eth0 inet dhcp
+hwaddress ether 32:20:59:5c:25:3b
+```
+
+## Soal Proxy
+SSS, Garden, dan Eden digunakan sebagai client Proxy agar pertukaran informasi dapat terjamin keamanannya, juga untuk mencegah kebocoran data.
+
+Pada Proxy Server di Berlint, Loid berencana untuk mengatur bagaimana Client dapat mengakses internet. Artinya setiap client harus menggunakan Berlint sebagai HTTP & HTTPS proxy.
+
+### Rule Proxy
+- Client hanya dapat mengakses internet diluar (selain) hari & jam kerja (senin-jumat 08.00 - 17.00) dan hari libur (dapat mengakses 24 jam penuh)
+```acl AVAILABLE_WORKING time MTWHF 08:00-17:00```
+- Saat akses internet dibuka, client dilarang untuk mengakses web tanpa HTTPS. (Contoh web HTTP: http://example.com)
+```
+acl Safe_ports port 443         # https
+http_access allow Safe_ports
+```
+- Adapun pada hari dan jam kerja sesuai nomor (1), client hanya dapat mengakses domain loid-work.com dan franky-work.com (IP tujuan domain dibebaskan)
+```
+pada /etc/squid/restrict-sites.acl: 
+loid-work.com
+franky-work.com
+
+acl WHITELISTS dstdomain "/etc/squid/restrict-sites.acl"
+```
+
+## Test Proxy
+- pada `http://example.com`
+
+![image](https://user-images.githubusercontent.com/74979139/200860619-bb0730eb-a694-44c2-9a6d-087d58ce0e21.png)
+
+- pada `https://example.com`
+
+![image](https://user-images.githubusercontent.com/74979139/200861576-9e2a67b8-66c8-4bf6-9c27-7304b72e85f0.png)
+
