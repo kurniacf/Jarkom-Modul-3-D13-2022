@@ -280,6 +280,7 @@ acl WHITELISTS dstdomain "/etc/squid/restrict-sites.acl"
 ```
 
 ## Test Proxy
+install lynx pada semua proxy client dengan `apt-get install lynx -y`
 - pada `http://example.com`
 
 ![image](https://user-images.githubusercontent.com/74979139/200860619-bb0730eb-a694-44c2-9a6d-087d58ce0e21.png)
