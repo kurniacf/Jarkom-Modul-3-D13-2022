@@ -4,9 +4,9 @@
 
 | **No** | **Nama**                  | **NRP**    |
 | ------ | ------------------------- | ---------- |
-| 1      | Marcellino Mahesa Janitra | 5025201105 |
-| 2      | Kurnia Cahya Febryanto    | 5025201073 |
-| 3      | Abisha Kean Tuana Sirait  | 5025201052 |
+| 1      | Kurnia Cahya Febryanto    | 5025201073 |
+| 2      | Marcellino Mahesa Janitra | 5025201105 |
+| 3      | Abisha Kean Tuana Sirait  | 5025201152 |
 
 ---
 
@@ -17,7 +17,10 @@
 - [Nomor 2](#nomor-2)
 - [Nomor 2 Lanjutan](#nomor-2-lanjutan)
 - [Nomor 3](#nomor-3)
-
+- [Nomor 4](#nomor-4)
+- [Nomor 5](#nomor-5)
+- [Nomor 6](#nomor-6)
+- [Nomor 7](#nomor-7)
 ---
 ### Setting
 Pada langkah awal dilakukan setting GNS sesuai dengan modul yang telah diberikan. Konfigurasi yang digunakan adalah sebagai berikut:
