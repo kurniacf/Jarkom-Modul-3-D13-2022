@@ -292,3 +292,6 @@ install lynx pada semua proxy client dengan `apt-get install lynx -y`
 
 ![image](https://user-images.githubusercontent.com/74979139/200861576-9e2a67b8-66c8-4bf6-9c27-7304b72e85f0.png)
 
+### Kendala
+- Materi relay yang tidak ada di modul
+- apache tidak bisa di start
